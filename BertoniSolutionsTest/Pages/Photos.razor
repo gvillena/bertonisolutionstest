@@ -1,0 +1,50 @@
+﻿@page "/albums/{albumId:int}/photos"
+
+@using BertoniSolutionsTest.Data
+@inject AlbumsService AlbumsService
+@inject NavigationManager NavigationManager
+
+@if (albumPhotos == null)
+{
+    <p><em>Cargando...</em></p>
+} else
+{
+    <h1>@album.Title</h1>
+    <br />
+    <h3><b>Fotos</b></h3>
+    <table class="table">
+        <tbody>
+            @foreach (var albumPhoto in albumPhotos)
+            {
+                <tr>
+                    <td>@albumPhoto.Title</td>
+                    <td>
+                        <img src=@albumPhoto.ThumbnailUrl />
+                    </td>
+                    <td>
+                        <button @onclick="@(() => VerComentarios(albumPhoto.Id))">Ver Comentarios</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Album album;
+    private List<Photo> albumPhotos;
+
+    [Parameter]
+    public int albumId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        album = await AlbumsService.GetAlbumAsync(albumId);
+        albumPhotos = await AlbumsService.GetAlbumPhotosAsync(albumId);
+    }
+
+    private void VerComentarios(int photoId)
+    {
+        NavigationManager.NavigateTo($"albums/{albumId}/photos/{photoId}/comments");
+    }
+}

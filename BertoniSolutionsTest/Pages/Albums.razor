@@ -1,0 +1,40 @@
+﻿@page "/albums"
+
+@using BertoniSolutionsTest.Data
+@inject AlbumsService AlbumsService
+@inject NavigationManager NavigationManager
+
+<h1>Albums App</h1>
+
+
+@if (albums == null)
+{
+    <p><em>Cargando...</em></p>
+} else
+{
+    <p>Seleccione un album de la lista</p>
+    <select id="album-select" @bind="selectedAlbumId">
+        @foreach (var album in albums)
+        {
+            <option value=@album.Id>@album.Title</option>
+        }
+    </select>
+    <button disabled=@(selectedAlbumId == 0 ? true : false) @onclick=VisualizarAlbum>Visualizar Album</button>
+}
+
+
+
+@code {
+    private List<Album> albums;
+    public int selectedAlbumId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        albums = await AlbumsService.GetAlbumsAsync();
+    }
+
+    private void VisualizarAlbum()
+    {
+        NavigationManager.NavigateTo($"albums/{selectedAlbumId}/photos");
+    }
+}

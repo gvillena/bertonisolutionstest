@@ -1,0 +1,49 @@
+﻿@page "/albums/{albumId:int}/photos/{albumPhotoId:int}/comments"
+
+@using BertoniSolutionsTest.Data
+@inject AlbumsService AlbumsService
+@inject NavigationManager NavigationManager
+
+
+
+@if (albumPhotoComments == null)
+{
+    <p><em>Cargando...</em></p>
+} else
+{
+    <h1>@album.Title</h1>
+    <h3>@albumPhoto.Title</h3>
+    <p>
+        <img src=@albumPhoto.ThumbnailUrl />
+    </p>
+    <br />
+    <h5><b>Comentarios</b></h5>
+    @foreach (var albumPhotoComment in albumPhotoComments)
+    {
+        <p><b><a href="mailto:{@albumPhotoComment.Email}">@albumPhotoComment.Name</a></b></p>
+        <p>@albumPhotoComment.Body</p>
+        <br />
+    }
+
+}
+
+@code {
+    private Album album;
+    private Photo albumPhoto;
+    private List<Comment> albumPhotoComments;
+
+    [Parameter]
+    public int albumId { get; set; }
+
+    [Parameter]
+    public int albumPhotoId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        album = await AlbumsService.GetAlbumAsync(albumId);
+        albumPhoto = await AlbumsService.GetAlbumPhotoAsync(albumPhotoId);
+        albumPhotoComments = await AlbumsService.GetAlbumPhotoCommentsAsync(albumPhotoId);
+    }
+
+
+}
